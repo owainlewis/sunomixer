@@ -1,0 +1,49 @@
+# Suno Mixer Configuration
+
+suno:
+  base_url: "https://api.sunoapi.org/api/v1"
+  model: "V5"
+  custom_mode: true
+  instrumental: true
+  poll_interval_seconds: 30
+  timeout_seconds: 600
+  max_concurrent: 10
+  retry_attempts: 3
+
+mixer:
+  crossfade_duration_ms: 10000
+  target_loudness_dbfs: -14.0
+  output_format: "mp3"
+  output_bitrate: "320k"
+
+thumbnail:
+  provider: "openai"
+  model: "gpt-image-1"
+  size: "1792x1024"
+  quality: "hd"
+
+video:
+  resolution: "1920x1080"
+  fps: 30
+  codec: "libx264"
+  preset: "slow"
+  crf: 18
+  audio_codec: "aac"
+  audio_bitrate: "320k"
+
+overlay:
+  font: "Montserrat-Black"
+  font_size: 120
+  font_color: "white"
+  position: "center"
+  shadow: true
+  shadow_color: "black"
+  shadow_offset: 2
+
+pipeline:
+  output_directory: "./output"
+  temp_directory: "./temp"
+  cleanup_temp: true
+
+presets:
+  default_genre: "dark_synthwave"
