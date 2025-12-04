@@ -16,7 +16,7 @@ from suno_mixer.metadata import (
     generate_hashtags,
     generate_tags,
     generate_youtube_description,
-    generate_youtube_title,
+    YouTubeTitleGenerator,
 )
 from suno_mixer.models import MixMetadata, MixOutput, TrackRequest
 from suno_mixer.presets import GENRE_PRESETS
@@ -51,6 +51,7 @@ class MixPipeline:
         self.warmth = WarmthProcessor()
         self.thumbnail_gen = ThumbnailGenerator(config.thumbnail)
         self.title_gen = TitleGenerator(config.thumbnail)  # Reuses Gemini config
+        self.yt_title_gen = YouTubeTitleGenerator(config.thumbnail)  # AI YouTube titles
         self.composer = VideoComposer(config.video, config.overlay)
 
         # Directories
@@ -180,9 +181,17 @@ class MixPipeline:
         # Phase 6: Generate YouTube metadata
         track_list = [{"title": t.title, "duration": t.duration} for t in tracks]
         duration_formatted = format_duration(total_duration)
+        duration_hours = max(1, int(total_duration // 3600))
+
+        # Generate AI-powered YouTube title
+        youtube_title = self.yt_title_gen.generate(
+            genre_name=preset["name"],
+            mood=mood,
+            duration_hours=duration_hours,
+        )
 
         metadata = MixMetadata(
-            title=generate_youtube_title(mood, preset["name"]),
+            title=youtube_title,
             description=generate_youtube_description(
                 mood=mood,
                 genre_name=preset["name"],

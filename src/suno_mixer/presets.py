@@ -114,26 +114,22 @@ TITLE_WORDS: dict[str, list[list[str]]] = {
 
 
 MOOD_WORDS = [
-    "FLOW",
-    "FOCUS",
-    "CLARITY",
-    "PROGRESS",
-    "DISCIPLINE",
-    "DRIVE",
-    "VISION",
-    "MOMENTUM",
-    "AMBITION",
-    "THRIVE",
-    "GRIND",
-    "RISE",
-    "FORGE",
-    "PEAK",
-    "DEPTH",
-    "CALM",
-    "EXECUTE",
-    "CREATE",
-    "BUILD",
-    "MASTERY",
+    "HYPERSCALE",
+    "MAINFRAME",
+    "BINARY",
+    "ALONE",
+    "DISTANT",
+    "RESET",
+    "3AM",
+    "2AM",
+    "RUNTIME",
+    "MATRIX",
+    "GLITCH",
+    "SYNTAX",
+    "DRIFT",
+    "SIGNAL",
+    "BEFORE",
+    "AFTER",
 ]
 
 
@@ -156,6 +152,32 @@ Generate {count} unique, evocative track titles. Each title should:
 - Sound like they belong on a Tron or Blade Runner soundtrack
 
 Output ONLY the titles, one per line. No numbering, no explanations."""
+
+
+# System prompt for generating YouTube video titles
+YOUTUBE_TITLE_SYSTEM_PROMPT = """Generate a single YouTube title for a focus music mix.
+
+Genre: {genre_name}
+Mood: {mood}
+Duration: {duration_hours} hours
+Audience: Software engineers, programmers, developers
+
+Requirements:
+- Include keywords like "coding", "programming", "focus", or "deep work"
+- Be click-worthy but not clickbait
+- Vary structure - don't always use colons or pipes
+- Be creative with hooks and benefit statements
+- Max 70 characters for optimal display
+- Make it feel fresh and unique, not templated
+
+Good examples of varied structures:
+- "3 Hours Deep Work Synthwave | Code Like a Machine"
+- "Enter Flow State: Dark Electronic for Programmers"
+- "The Ultimate Coding Playlist | Lo-Fi Focus Music"
+- "Late Night Coding Session | Ambient Electronic Mix"
+- "Unlock Peak Focus | 2 Hours Programming Music"
+
+Output ONLY the title, nothing else."""
 
 
 # System prompt for generating unique thumbnail prompts

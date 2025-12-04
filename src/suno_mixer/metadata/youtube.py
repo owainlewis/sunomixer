@@ -1,6 +1,13 @@
 """YouTube metadata generation for Suno Mixer."""
 
+import logging
 import random
+from typing import Optional
+
+from suno_mixer.config import ThumbnailConfig
+from suno_mixer.presets import YOUTUBE_TITLE_SYSTEM_PROMPT
+
+logger = logging.getLogger(__name__)
 
 NEWSLETTER_LINK = "https://newsletter.owainlewis.com/subscribe"
 SKOOL_LINK = "https://skool.com/aiengineer/about"
@@ -49,6 +56,26 @@ TITLE_HOOKS = [
     "Productivity",
 ]
 
+# Varied title templates for fallback generation
+# {hook} = power word, {genre} = genre name, {duration} = hours
+TITLE_TEMPLATES = [
+    "{hook}: {genre} for Coding & Focus",
+    "{duration}+ Hours {genre} | Deep Work Music",
+    "{genre} Mix for Programmers | {hook}",
+    "Code to This: {genre} | {hook}",
+    "{hook} | {genre} Coding Music",
+    "The Ultimate {genre} Coding Session",
+    "{duration} Hours {genre} | Enter Flow State",
+    "Late Night Coding | {genre} Mix",
+    "{hook}: Programming Music | {genre}",
+    "Deep Work {genre} | {hook} Mode",
+    "Coding Playlist | {genre} | {hook}",
+    "{genre} for Developers | {hook}",
+    "Focus Music for Coders | {genre}",
+    "{hook} | {duration}h {genre} Mix",
+    "Developer Vibes | {genre} | {hook}",
+]
+
 
 def format_duration(seconds: float) -> str:
     """Format duration in seconds to human-readable string."""
@@ -61,12 +88,120 @@ def format_duration(seconds: float) -> str:
 
 
 def generate_youtube_title(mood: str, genre_name: str) -> str:
-    """Generate YouTube title following SOP format.
+    """Generate YouTube title using template fallback.
 
-    Format: [Strong Benefit/Hook] | [Keywords/Audience] | [Music Vibe]
+    This is the simple fallback method. For AI-generated titles,
+    use YouTubeTitleGenerator.generate().
     """
+    return generate_youtube_title_from_template(genre_name, duration_hours=2)
+
+
+def generate_youtube_title_from_template(
+    genre_name: str,
+    duration_hours: int = 2,
+) -> str:
+    """Generate a YouTube title using varied templates.
+
+    Args:
+        genre_name: Human-readable genre name
+        duration_hours: Duration in hours for the title
+
+    Returns:
+        A formatted YouTube title
+    """
+    template = random.choice(TITLE_TEMPLATES)
     hook = random.choice(TITLE_HOOKS)
-    return f"{hook}: Deep Work Music for Coding & Programming | {genre_name}"
+
+    return template.format(
+        hook=hook,
+        genre=genre_name,
+        duration=duration_hours,
+    )
+
+
+class YouTubeTitleGenerator:
+    """Generate YouTube titles using AI with template fallback."""
+
+    def __init__(self, config: ThumbnailConfig):
+        """Initialize generator.
+
+        Args:
+            config: Thumbnail config (reuses Gemini API key)
+        """
+        self.config = config
+        self._client = None
+
+    @property
+    def client(self):
+        """Lazy-load Gemini client only when needed."""
+        if self._client is None:
+            from google import genai
+
+            self._client = genai.Client(api_key=self.config.api_key)
+        return self._client
+
+    def generate(
+        self,
+        genre_name: str,
+        mood: str,
+        duration_hours: int = 2,
+    ) -> str:
+        """Generate a YouTube title using AI.
+
+        Args:
+            genre_name: Human-readable genre name (e.g., "Dark Synthwave")
+            mood: Mood word (e.g., "FOCUS", "FLOW")
+            duration_hours: Duration in hours
+
+        Returns:
+            A creative, varied YouTube title
+        """
+        if not self.config.api_key:
+            logger.warning("No Gemini API key configured, using template fallback")
+            return self._fallback_generate(genre_name, duration_hours)
+
+        try:
+            prompt = YOUTUBE_TITLE_SYSTEM_PROMPT.format(
+                genre_name=genre_name,
+                mood=mood,
+                duration_hours=duration_hours,
+            )
+
+            logger.info(f"Generating AI YouTube title for: {genre_name}")
+
+            response = self.client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt,
+            )
+
+            title = response.text.strip()
+
+            # Clean up any quotes the model might add
+            title = title.strip('"\'')
+
+            # Validate length - YouTube titles should be under 100 chars
+            if len(title) > 100:
+                logger.warning(f"AI title too long ({len(title)} chars), using fallback")
+                return self._fallback_generate(genre_name, duration_hours)
+
+            logger.info(f"Generated YouTube title: {title}")
+            return title
+
+        except Exception as e:
+            logger.error(f"AI YouTube title generation failed: {e}, using fallback")
+            return self._fallback_generate(genre_name, duration_hours)
+
+    def _fallback_generate(self, genre_name: str, duration_hours: int) -> str:
+        """Fallback to template-based title generation.
+
+        Args:
+            genre_name: Human-readable genre name
+            duration_hours: Duration in hours
+
+        Returns:
+            A template-based YouTube title
+        """
+        return generate_youtube_title_from_template(genre_name, duration_hours)
 
 
 def generate_youtube_description(
