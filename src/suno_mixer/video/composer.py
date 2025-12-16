@@ -8,7 +8,7 @@ from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-from suno_mixer.config import OverlayConfig, VideoConfig
+from suno_mixer.config import OverlayConfig, VideoConfig, VisualizerConfig
 
 logger = logging.getLogger(__name__)
 
@@ -22,15 +22,22 @@ class ComposerError(Exception):
 class VideoComposer:
     """Compose video from thumbnail, audio, and text overlay."""
 
-    def __init__(self, video_config: VideoConfig, overlay_config: OverlayConfig):
+    def __init__(
+        self,
+        video_config: VideoConfig,
+        overlay_config: OverlayConfig,
+        visualizer_config: Optional[VisualizerConfig] = None,
+    ):
         """Initialize video composer.
 
         Args:
             video_config: Video encoding configuration
             overlay_config: Text overlay configuration
+            visualizer_config: Audio visualizer configuration (optional)
         """
         self.video_config = video_config
         self.overlay_config = overlay_config
+        self.visualizer_config = visualizer_config or VisualizerConfig()
 
         # Check for ffmpeg
         if not shutil.which("ffmpeg"):
@@ -257,6 +264,88 @@ class VideoComposer:
         logger.debug(f"Saved overlay image: {output_path}")
         return output_path
 
+    def _build_visualizer_filter(self, video_width: int, video_height: int) -> str:
+        """Build FFmpeg filter string for audio visualization.
+
+        Args:
+            video_width: Width of the video in pixels
+            video_height: Height of the video in pixels
+
+        Returns:
+            FFmpeg filter_complex string for the visualizer
+        """
+        viz = self.visualizer_config
+        viz_height = viz.height
+        fps = self.video_config.fps
+
+        # Calculate Y position based on config
+        if viz.position == "bottom":
+            y_pos = video_height - viz_height - viz.margin_bottom
+        elif viz.position == "top":
+            y_pos = viz.margin_bottom
+        else:  # center
+            y_pos = (video_height - viz_height) // 2
+
+        # Build the visualizer filter based on style
+        if viz.style == "lissajous":
+            # avectorscope in lissajous mode - circular, hypnotic, zen
+            viz_filter = (
+                f"avectorscope=s={viz_height}x{viz_height}:"
+                f"mode=lissajous:rate={fps}:draw=line:"
+                f"scale=sqrt:rc=40:gc=40:bc=40"
+            )
+        elif viz.style == "wave":
+            # showwaves with centered line mode - clean and professional
+            viz_filter = (
+                f"showwaves=s={video_width}x{viz_height}:"
+                f"mode=cline:rate={fps}:colors={viz.color}"
+            )
+        elif viz.style == "line":
+            # showwaves with simple line mode - minimal and subtle
+            viz_filter = (
+                f"showwaves=s={video_width}x{viz_height}:"
+                f"mode=line:rate={fps}:colors={viz.color}"
+            )
+        elif viz.style == "spectrum":
+            # showfreqs for frequency spectrum visualization
+            viz_filter = (
+                f"showfreqs=s={video_width}x{viz_height}:"
+                f"mode=bar:fscale=log:colors={viz.color}"
+            )
+        elif viz.style == "bars":
+            # showcqt for constant-Q transform (spectrum bars)
+            viz_filter = (
+                f"showcqt=s={video_width}x{viz_height}:"
+                f"count=5:bar_g=2:sono_g=4"
+            )
+        else:
+            # Default to lissajous
+            viz_filter = (
+                f"avectorscope=s={viz_height}x{viz_height}:"
+                f"mode=lissajous:rate={fps}:draw=line:"
+                f"scale=sqrt:rc=40:gc=40:bc=40"
+            )
+
+        # Build the complete filter_complex string
+        # [0:a] = audio input, [1:v] = image input
+        # Scale image, generate visualizer, overlay visualizer on image
+        opacity_hex = format(int(viz.opacity * 255), "02x")
+
+        # Calculate X position (centered for lissajous, full width for others)
+        if viz.style == "lissajous":
+            x_pos = (video_width - viz_height) // 2  # Center the square
+        else:
+            x_pos = 0
+
+        filter_complex = (
+            f"[1:v]scale={video_width}:{video_height},fade=t=in:st=0:d=2[bg];"
+            f"[0:a]{viz_filter},format=rgba,"
+            f"colorchannelmixer=aa={viz.opacity}[wave];"
+            f"[bg][wave]overlay={x_pos}:{y_pos}:format=auto[out]"
+        )
+
+        return filter_complex
+
     def compose(
         self,
         thumbnail_path: Path,
@@ -294,17 +383,28 @@ class VideoComposer:
 
         logger.info(f"Composing video: {output_path}")
 
+        # Parse video resolution
+        width, height = map(int, self.video_config.resolution.split("x"))
+
         # Build FFmpeg command - use ORIGINAL image (no text) for video
+        # Input order matters for filter_complex: audio first, then image
         cmd = [
             "ffmpeg",
             "-y",  # Overwrite output
+            "-i", str(audio_path),  # Input 0: audio
             "-loop", "1",  # Loop image
-            "-i", str(thumbnail_path),  # Input: original image (NO text)
-            "-i", str(audio_path),  # Input audio
+            "-i", str(thumbnail_path),  # Input 1: original image (NO text)
         ]
 
-        # Add fade-in from black effect
-        cmd.extend(["-vf", "fade=t=in:st=0:d=2"])
+        # Add visualizer or simple fade-in based on config
+        if self.visualizer_config.enabled:
+            # Use filter_complex for audio visualization
+            filter_complex = self._build_visualizer_filter(width, height)
+            logger.info(f"Adding audio visualizer (style={self.visualizer_config.style})")
+            cmd.extend(["-filter_complex", filter_complex, "-map", "[out]", "-map", "0:a"])
+        else:
+            # Simple fade-in without visualizer
+            cmd.extend(["-vf", f"scale={width}:{height},fade=t=in:st=0:d=2"])
 
         cmd.extend([
             "-c:v", self.video_config.codec,

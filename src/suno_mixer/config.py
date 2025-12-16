@@ -67,6 +67,18 @@ class OverlayConfig(BaseSettings):
     glow_opacity: int = 180  # 0-255
 
 
+class VisualizerConfig(BaseSettings):
+    """Audio visualizer configuration."""
+
+    enabled: bool = True
+    style: str = "lissajous"  # "lissajous", "wave", "line", "spectrum", or "bars"
+    height: int = 200  # Height of visualizer in pixels (also width for lissajous)
+    position: str = "center"  # "bottom", "top", or "center"
+    color: str = "white"
+    opacity: float = 0.6  # 0.0 to 1.0
+    margin_bottom: int = 50  # Pixels from bottom edge
+
+
 class PipelineConfig(BaseSettings):
     """Pipeline configuration."""
 
@@ -89,6 +101,7 @@ class Config(BaseSettings):
     thumbnail: ThumbnailConfig = Field(default_factory=ThumbnailConfig)
     video: VideoConfig = Field(default_factory=VideoConfig)
     overlay: OverlayConfig = Field(default_factory=OverlayConfig)
+    visualizer: VisualizerConfig = Field(default_factory=VisualizerConfig)
     pipeline: PipelineConfig = Field(default_factory=PipelineConfig)
 
 

@@ -52,7 +52,7 @@ class MixPipeline:
         self.thumbnail_gen = ThumbnailGenerator(config.thumbnail)
         self.title_gen = TitleGenerator(config.thumbnail)  # Reuses Gemini config
         self.yt_title_gen = YouTubeTitleGenerator(config.thumbnail)  # AI YouTube titles
-        self.composer = VideoComposer(config.video, config.overlay)
+        self.composer = VideoComposer(config.video, config.overlay, config.visualizer)
 
         # Directories
         self.output_dir = Path(config.pipeline.output_directory)

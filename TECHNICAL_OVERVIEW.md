@@ -4,9 +4,9 @@
 
 ## Overview
 
-Sunomix is a production-grade automation pipeline that generates complete YouTube-ready music videos with a single command. The system orchestrates multiple AI services, audio processing, and video composition to produce 90+ minute deep work/focus music mixes that are automatically uploaded to YouTube.
+Sunomix is a automation pipeline that generates complete YouTube-ready music videos with a single command. The system orchestrates multiple AI services, audio processing, and video composition to produce 90+ minute deep work/focus music mixes that are automatically uploaded to YouTube.
 
-**Key Achievement:** What would take a human producer several hours of work is fully automated into a ~10 minute pipeline that can run daily without intervention.
+**Benefit:** What would take a human producer many hours of work is fully automated into a ~10 minute pipeline that can run daily without intervention.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐

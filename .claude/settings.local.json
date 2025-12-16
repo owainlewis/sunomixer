@@ -6,7 +6,9 @@
       "Bash(python:*)",
       "Bash(pip install:*)",
       "Bash(uv pip install:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(xargs:*)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
