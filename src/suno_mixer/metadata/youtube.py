@@ -2,7 +2,6 @@
 
 import logging
 import random
-from typing import Optional
 
 from suno_mixer.config import ThumbnailConfig
 from suno_mixer.presets import YOUTUBE_TITLE_SYSTEM_PROMPT

@@ -63,7 +63,7 @@ def main(ctx, verbose):
 @click.pass_context
 def generate(ctx, mood, genre, tracks, output):
     """Generate a complete YouTube-ready mix."""
-    console.print(f"\n[bold cyan]Suno Mixer[/bold cyan] v0.1.0\n")
+    console.print("\n[bold cyan]Suno Mixer[/bold cyan] v0.1.0\n")
 
     preset = GENRE_PRESETS[genre]
     console.print(f"  [bold]Mood:[/bold]   {mood.upper()}")
@@ -315,7 +315,7 @@ def publish(ctx, mix_path, privacy, secrets):
             TimeElapsedColumn(),
             console=console,
         ) as progress:
-            task = progress.add_task("[cyan]Uploading video...", total=None)
+            progress.add_task("[cyan]Uploading video...", total=None)
 
             video_id = client.upload(
                 video_path=video_path,

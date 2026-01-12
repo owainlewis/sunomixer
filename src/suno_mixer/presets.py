@@ -15,15 +15,18 @@ class GenrePreset(TypedDict):
 
 
 GENRE_PRESETS: dict[str, GenrePreset] = {
-    "dark_synthwave": {
-        "name": "Dreamy Synthwave",
+    "synthwave": {
+        "name": "Synthwave",
         "style": "80s synthwave, dreamy retrowave, nostalgic outrun, emotional synthwave",
         "prompt": """Dreamy 80s synthwave with nostalgic emotional vibes.
 Lush analog synthesizers, warm pads, shimmering arpeggios, gentle pulsing bass.
 Nostalgic sunset drives and neon-lit nights. Emotional and cinematic.
-Gated reverb drums, chorus-drenched leads, ethereal synth melodies. Bittersweet and hopeful. 92 BPM.""",
+Influenced by The Midnight, FM-84, Timecop1983, and Gunship's softer moments.
+Gated reverb drums, chorus-drenched leads, ethereal synth melodies.
+Warm tape saturation, subtle sidechain pump, VHS aesthetic.
+Bittersweet and hopeful. Perfect background for focused creative work. 92 BPM.""",
         "bpm": 92,
-        "negative_tags": "vocals, singing, saxophone, sax, harsh, industrial, aggressive, heavy, distorted",
+        "negative_tags": "vocals, singing, saxophone, sax, harsh, industrial, aggressive, heavy, distorted, busy, chaotic",
     },
     "deep_house": {
         "name": "Chill Deep House",
@@ -116,12 +119,60 @@ Calm without being sleepy, present without demanding attention. 72 BPM.""",
         "bpm": 72,
         "negative_tags": "vocals, singing, drops, buildup, harsh, aggressive, loud, fast, intense, dark, heavy, bass drops, EDM, dubstep, trap",
     },
+    "chillstep": {
+        "name": "Chillstep",
+        "style": "Chillstep, melodic dubstep, atmospheric bass, emotional electronic, calm study music",
+        "prompt": """Calm melodic chillstep perfect for focused study sessions.
+Soft sub-bass swells, gentle wobbles, lush ethereal pads washing over everything.
+Emotional piano melodies layered with shimmering synths and airy textures.
+Slow halftime drums with soft snares and delicate hi-hats, never overpowering.
+Influenced by Blackmill, CMA, Killigrew, and Seven Lions' softer work.
+Dreamy reverb-soaked atmospheres, warm analog warmth meets digital clarity.
+Like stargazing on a quiet night, peaceful and introspective.
+Melodic and emotional without being intense, perfect background for deep focus.
+Calming bass presence that grounds without distracting. 140 BPM halftime feel.""",
+        "bpm": 140,
+        "negative_tags": "vocals, singing, heavy drops, aggressive, loud, intense, harsh, brostep, riddim, heavy bass, screaming synths",
+    },
+    "winter_focus": {
+        "name": "Winter Focus",
+        "style": "Dark minimal electronic, calm chill electronica, winter ambient, deep focus coding music",
+        "prompt": """Calm, steady dark electronica perfect for deep focus and late-night coding.
+Slow tempo with gentle low-end pulse providing sustained concentration foundation.
+Crisp minimal hi-hats and soft percussion, never intrusive or busy.
+Cold, spacious atmospheres with winter night clarity and stillness.
+Calm minimal melodies drifting through dark ambient pads.
+Clean production with deep sub-bass warmth and icy high-end shimmer.
+Influenced by Burial, Boards of Canada, and Tycho's darker moments.
+Seamless instrumental flow, hypnotic and meditative without being sleepy.
+Like coding alone at 3am with snow falling outside, focused and calm.
+Dark but not oppressive, minimal but not empty. 68 BPM.""",
+        "bpm": 68,
+        "negative_tags": "vocals, singing, drops, buildup, harsh, aggressive, loud, fast, intense, upbeat, happy, bright, EDM, dubstep, trap, busy drums, complex rhythms",
+    },
+    "true_devotion": {
+        "name": "True Devotion",
+        "style": "Future garage, chillstep, downtempo house, ambient bass, minimal electronic, deep focus work music",
+        "prompt": """Minimal future garage and chillstep built for true devotion to the craft.
+Deep sub-bass providing clear momentum and grounded foundation.
+Calm intensity with future rhythm patterns, never rushed but always moving forward.
+Sparse melodic fragments floating over warm low-end, clean and intentional.
+Influenced by Burial, Mount Kimbie, Four Tet, and James Blake's instrumental work.
+Soft shuffling percussion with crisp hi-hats and muted kicks.
+Spacious mix with room to breathe, every element purposeful.
+Like locking in for serious work, one step further than yesterday.
+Ambient house warmth meets future garage precision.
+Consistent progress without distraction, calm without being sleepy.
+Perfect for long coding sessions, deep design work, and focused productivity. 128 BPM.""",
+        "bpm": 128,
+        "negative_tags": "vocals, singing, drops, buildup, harsh, aggressive, loud, intense, happy, bright, EDM, dubstep, trap, busy, chaotic, overwhelming",
+    },
 }
 
 
 # Title word combinations for each genre (3-4 words per title)
 TITLE_WORDS: dict[str, list[list[str]]] = {
-    "dark_synthwave": [
+    "synthwave": [
         [
             "Neon",
             "Golden",
@@ -441,6 +492,120 @@ TITLE_WORDS: dict[str, list[list[str]]] = {
             "Glow",
         ],
     ],
+    "chillstep": [
+        [
+            "Ethereal",
+            "Distant",
+            "Fading",
+            "Celestial",
+            "Floating",
+            "Serene",
+            "Luminous",
+            "Dreaming",
+            "Endless",
+            "Soft",
+        ],
+        [
+            "Stars",
+            "Skies",
+            "Waves",
+            "Aurora",
+            "Nebula",
+            "Horizon",
+            "Ocean",
+            "Cosmos",
+            "Twilight",
+            "Haven",
+        ],
+        [
+            "Dreams",
+            "Drift",
+            "Glow",
+            "Pulse",
+            "Flow",
+            "Light",
+            "Peace",
+            "Haze",
+            "Bliss",
+            "Echo",
+        ],
+    ],
+    "winter_focus": [
+        [
+            "Frozen",
+            "Silent",
+            "Cold",
+            "Midnight",
+            "Hollow",
+            "Still",
+            "Deep",
+            "Quiet",
+            "Dark",
+            "Fading",
+        ],
+        [
+            "Winter",
+            "Snow",
+            "Frost",
+            "Night",
+            "Void",
+            "Glass",
+            "Ice",
+            "Haze",
+            "Mist",
+            "Static",
+        ],
+        [
+            "Focus",
+            "Drift",
+            "Pulse",
+            "State",
+            "Flow",
+            "Loop",
+            "Calm",
+            "Breath",
+            "Silence",
+            "Code",
+        ],
+    ],
+    "true_devotion": [
+        [
+            "One",
+            "Forward",
+            "Steady",
+            "Further",
+            "Clear",
+            "True",
+            "Deep",
+            "Quiet",
+            "Devoted",
+            "Locked",
+        ],
+        [
+            "Step",
+            "Motion",
+            "Focus",
+            "Progress",
+            "Craft",
+            "Path",
+            "Momentum",
+            "Discipline",
+            "Session",
+            "Current",
+        ],
+        [
+            "Forward",
+            "Further",
+            "Flow",
+            "State",
+            "Devotion",
+            "Resolve",
+            "Drive",
+            "Rhythm",
+            "Commit",
+            "Lock",
+        ],
+    ],
 }
 
 
@@ -461,6 +626,9 @@ MOOD_WORDS = [
     "SIGNAL",
     "BEFORE",
     "AFTER",
+    "DEVOTION",
+    "FURTHER",
+    "LOCKED",
 ]
 
 
@@ -554,7 +722,7 @@ def generate_title(genre: str, index: int) -> str:
     Returns:
         A three-word evocative title
     """
-    words = TITLE_WORDS.get(genre, TITLE_WORDS["dark_synthwave"])
+    words = TITLE_WORDS.get(genre, TITLE_WORDS["synthwave"])
 
     random.seed(index * 31 + hash(genre) % 1000)
     first = random.choice(words[0])
@@ -575,7 +743,7 @@ def generate_titles(genre: str, count: int) -> list[str]:
     Returns:
         List of unique three-word evocative titles
     """
-    words = TITLE_WORDS.get(genre, TITLE_WORDS["dark_synthwave"])
+    words = TITLE_WORDS.get(genre, TITLE_WORDS["synthwave"])
     titles: set[str] = set()
     max_attempts = count * 10  # Prevent infinite loop
     attempts = 0
@@ -609,19 +777,3 @@ def get_preset(genre: str) -> GenrePreset:
     return GENRE_PRESETS[genre]
 
 
-def get_thumbnail_prompt(style: str) -> str:
-    """Get a thumbnail prompt by style.
-
-    Args:
-        style: The style key
-
-    Returns:
-        The DALL-E prompt string
-
-    Raises:
-        KeyError: If style not found
-    """
-    if style not in THUMBNAIL_STYLES:
-        available = ", ".join(THUMBNAIL_STYLES.keys())
-        raise KeyError(f"Unknown thumbnail style '{style}'. Available: {available}")
-    return THUMBNAIL_STYLES[style]

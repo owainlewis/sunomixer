@@ -12,11 +12,11 @@ from suno_mixer.audio.mixer import AudioMixer
 from suno_mixer.audio.warmth import WarmthProcessor
 from suno_mixer.config import Config
 from suno_mixer.metadata import (
+    YouTubeTitleGenerator,
     format_duration,
     generate_hashtags,
     generate_tags,
     generate_youtube_description,
-    YouTubeTitleGenerator,
 )
 from suno_mixer.models import MixMetadata, MixOutput, TrackRequest
 from suno_mixer.presets import GENRE_PRESETS

@@ -3,7 +3,8 @@
 import logging
 
 from suno_mixer.config import ThumbnailConfig
-from suno_mixer.presets import TITLE_SYSTEM_PROMPT, generate_titles as generate_titles_fallback
+from suno_mixer.presets import TITLE_SYSTEM_PROMPT
+from suno_mixer.presets import generate_titles as generate_titles_fallback
 
 logger = logging.getLogger(__name__)
 

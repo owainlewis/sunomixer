@@ -276,6 +276,7 @@ class VideoComposer:
         """
         viz = self.visualizer_config
         viz_height = viz.height
+        viz_width = viz.width
         fps = self.video_config.fps
 
         # Calculate Y position based on config
@@ -285,6 +286,20 @@ class VideoComposer:
             y_pos = viz.margin_bottom
         else:  # center
             y_pos = (video_height - viz_height) // 2
+
+        # Determine actual width for this style
+        if viz.style == "lissajous":
+            actual_width = viz_height  # Square for lissajous
+        else:
+            actual_width = viz_width
+
+        # Calculate X position based on horizontal_position
+        if viz.horizontal_position == "left":
+            x_pos = viz.margin_side
+        elif viz.horizontal_position == "right":
+            x_pos = video_width - actual_width - viz.margin_side
+        else:  # center
+            x_pos = (video_width - actual_width) // 2
 
         # Build the visualizer filter based on style
         if viz.style == "lissajous":
@@ -297,26 +312,35 @@ class VideoComposer:
         elif viz.style == "wave":
             # showwaves with centered line mode - clean and professional
             viz_filter = (
-                f"showwaves=s={video_width}x{viz_height}:"
+                f"showwaves=s={viz_width}x{viz_height}:"
                 f"mode=cline:rate={fps}:colors={viz.color}"
             )
         elif viz.style == "line":
             # showwaves with simple line mode - minimal and subtle
             viz_filter = (
-                f"showwaves=s={video_width}x{viz_height}:"
+                f"showwaves=s={viz_width}x{viz_height}:"
                 f"mode=line:rate={fps}:colors={viz.color}"
             )
         elif viz.style == "spectrum":
             # showfreqs for frequency spectrum visualization
             viz_filter = (
-                f"showfreqs=s={video_width}x{viz_height}:"
+                f"showfreqs=s={viz_width}x{viz_height}:"
                 f"mode=bar:fscale=log:colors={viz.color}"
             )
         elif viz.style == "bars":
-            # showcqt for constant-Q transform (spectrum bars)
+            # showfreqs with bar mode - cleaner frequency bars
             viz_filter = (
-                f"showcqt=s={video_width}x{viz_height}:"
-                f"count=5:bar_g=2:sono_g=4"
+                f"showfreqs=s={viz_width}x{viz_height}:"
+                f"mode=bar:ascale=log:fscale=log:"
+                f"win_size=1024:colors={viz.color}"
+            )
+        elif viz.style == "p2p":
+            # showwaves point-to-point mode - discrete vertical bars
+            # Creates thin vertical lines from center, like a minimal equalizer
+            viz_filter = (
+                f"showwaves=s={viz_width}x{viz_height}:"
+                f"mode=p2p:rate={fps}:colors={viz.color}:"
+                f"scale=sqrt:draw=full"
             )
         else:
             # Default to lissajous
@@ -329,14 +353,6 @@ class VideoComposer:
         # Build the complete filter_complex string
         # [0:a] = audio input, [1:v] = image input
         # Scale image, generate visualizer, overlay visualizer on image
-        opacity_hex = format(int(viz.opacity * 255), "02x")
-
-        # Calculate X position (centered for lissajous, full width for others)
-        if viz.style == "lissajous":
-            x_pos = (video_width - viz_height) // 2  # Center the square
-        else:
-            x_pos = 0
-
         filter_complex = (
             f"[1:v]scale={video_width}:{video_height},fade=t=in:st=0:d=2[bg];"
             f"[0:a]{viz_filter},format=rgba,"
@@ -421,7 +437,7 @@ class VideoComposer:
         logger.debug(f"FFmpeg command: {' '.join(cmd)}")
 
         try:
-            result = subprocess.run(
+            subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,

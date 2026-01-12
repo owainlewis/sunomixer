@@ -7,14 +7,14 @@ import logging
 from pathlib import Path
 
 from pedalboard import (
-    Pedalboard,
-    Compressor,
     Chorus,
-    HighShelfFilter,
-    LowShelfFilter,
-    LowpassFilter,
-    Reverb,
+    Compressor,
     Gain,
+    HighShelfFilter,
+    LowpassFilter,
+    LowShelfFilter,
+    Pedalboard,
+    Reverb,
 )
 from pedalboard.io import AudioFile
 

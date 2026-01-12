@@ -9,7 +9,6 @@ import aiohttp
 from suno_mixer.config import SunoConfig
 from suno_mixer.models import (
     GenerateResponse,
-    TaskStatus,
     TaskStatusResponse,
     TrackRequest,
     TrackResult,
