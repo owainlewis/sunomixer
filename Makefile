@@ -24,7 +24,7 @@ help:
 	@echo "  MOOD=$(MOOD)  GENRE=$(GENRE)  TRACKS=$(TRACKS)  PRIVACY=$(PRIVACY)"
 
 generate:
-	uv run python -m suno_mixer generate --mood=$(MOOD) --genre=$(GENRE) --tracks=$(TRACKS)
+	uv run python -m suno_mixer generate --mood="$(MOOD)" --genre="$(GENRE)" --tracks=$(TRACKS)
 
 upload:
 ifndef MIX

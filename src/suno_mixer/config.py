@@ -71,12 +71,15 @@ class VisualizerConfig(BaseSettings):
     """Audio visualizer configuration."""
 
     enabled: bool = True
-    style: str = "lissajous"  # "lissajous", "wave", "line", "spectrum", or "bars"
-    height: int = 200  # Height of visualizer in pixels (also width for lissajous)
-    position: str = "center"  # "bottom", "top", or "center"
+    style: str = "p2p"  # "lissajous", "wave", "line", "spectrum", "bars", or "p2p"
+    height: int = 60  # Height of visualizer in pixels (also width for lissajous)
+    width: int = 200  # Width of visualizer in pixels (ignored for lissajous)
+    position: str = "bottom"  # "bottom", "top", or "center"
+    horizontal_position: str = "right"  # "left", "center", or "right"
     color: str = "white"
-    opacity: float = 0.6  # 0.0 to 1.0
-    margin_bottom: int = 50  # Pixels from bottom edge
+    opacity: float = 0.9  # 0.0 to 1.0
+    margin_bottom: int = 40  # Pixels from bottom edge
+    margin_side: int = 50  # Pixels from left/right edge
 
 
 class PipelineConfig(BaseSettings):
